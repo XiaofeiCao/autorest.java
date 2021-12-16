@@ -62,3 +62,24 @@ pipeline:
 ```yaml $(low-level-client) && $(sdk-integration)
 regenerate-pom: true
 ```
+
+```yaml $(testmodeler)
+use-extension:
+  # "@autorest/testmodeler": "D://projects//codegen//azure-sdk-tools//tools//sdk-testgen//packages//autorest.testmodeler"
+  "@autorest/testmodeler": "1.0.4"
+
+
+pipeline:
+  test-modeler:
+    input: modelerfour/identity
+    scope : output-scope
+  test-modeler/identity:
+    input: test-modeler
+  preprocessor:
+    input: test-modeler/identity
+
+
+testmodeler:
+  use-parents-value: true
+  split-parents-value: false
+```

@@ -42,7 +42,15 @@ public class Preprocessor extends NewPlugin {
   @Override
   public boolean processInternal() {
     List<String> allFiles = listInputs();
-    List<String> files = allFiles.stream().filter(s -> s.contains("no-tags")).collect(Collectors.toList());
+    List<String> files = allFiles.stream()
+//        .filter(s -> {
+//        System.out.println(s);
+//        return s.contains("no-tags");
+//    })
+        .collect(Collectors.toList());
+      if (true) {
+          throw new UnsupportedOperationException();
+      }
     if (files.size() != 1) {
       throw new RuntimeException(String.format("Generator received incorrect number of inputs: %s : %s}", files.size(), String.join(", ", files)));
     }
