@@ -65,7 +65,7 @@ regenerate-pom: true
 
 ```yaml $(testmodeler)
 use-extension:
-  "@autorest/testmodeler": "C:\\Users\\xiaofeicao\\projects\\autorest.tests"
+  "@autorest/testmodeler": "C:\\Users\\xiaofeicao\\projects\\fork\\azure-sdk-tools\\tools\\sdk-testgen\\packages\\autorest.testmodeler"
   # "@autorest/testmodeler": "1.0.4"
 
 
@@ -79,8 +79,7 @@ pipeline:
 
   
 test-resources:
-  - test: ..\..\azure-rest-api-specs\specification\signalr\resource-manager\Microsoft.SignalRService\preview\2020-07-01-preview\scenarios\signalR.yaml
-  
+  - test: ..\..\azure-rest-api-specs\specification\signalr\resource-manager\Microsoft.SignalRService\preview\2020-07-01-preview\test-scenarios\signalR.yaml
   
 input-file:
   - C:\Users\xiaofeicao\projects\fork\azure-rest-api-specs\specification\signalr\resource-manager\Microsoft.SignalRService\preview\2020-07-01-preview\signalr.json
