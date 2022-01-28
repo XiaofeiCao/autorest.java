@@ -84,6 +84,7 @@ public class FluentGenTests {
                 String operationGroup = strs[0];
                 String operation = strs[1];
                 FluentResourceCollection resourceCollection = fluentClient.getResourceCollections().stream().filter(collection -> collection.getInterfaceType().getName().equalsIgnoreCase(CodeNamer.getPlural(operationGroup))).findFirst().get();
+                // match collectionMethod
                 Optional<FluentCollectionMethod> method = resourceCollection.getMethodsForTemplate().stream().filter(m -> operation.equalsIgnoreCase(m.getMethodName())).findFirst();
                 if (method.isPresent()) {
                     FluentCollectionMethod collectionMethod = method.get();
@@ -93,7 +94,7 @@ public class FluentGenTests {
                     FluentExample fluentExample = new FluentExample("testg", "testm", null);
                     fluentExample.getCollectionMethodExamples().add(collectionMethodExample);
                     javaPackage.addSample(fluentExample);
-                } else {
+                } else { // match resourceCreate
                     Optional<ResourceCreate> createMethod = resourceCollection.getResourceCreates().stream().filter(rc -> !FluentUtils.exampleIsUpdate(rc.getMethodName()) && rc.getMethodName().equalsIgnoreCase(operation)).findFirst();
                     if (createMethod.isPresent()) {
                         ResourceCreate create = createMethod.get();
@@ -101,7 +102,7 @@ public class FluentGenTests {
                         FluentExample fluentExample = new FluentExample("testg", "testm", null);
                         fluentExample.getResourceCreateExamples().add(createExample);
                         javaPackage.addSample(fluentExample);
-                    } else {
+                    } else { // match resourceUpdate
                         Optional<ResourceUpdate> updateMethod = resourceCollection.getResourceUpdates().stream().filter(rc -> FluentUtils.exampleIsUpdate(rc.getMethodName()) && rc.getMethodName().equalsIgnoreCase(operation)).findFirst();
                         ResourceUpdate update = updateMethod.get();
                         FluentResourceUpdateExample updateExample = ExampleParser.parseResourceUpdate(resourceCollection, update, proxyMethodExample);
@@ -112,13 +113,6 @@ public class FluentGenTests {
                 }
 
 
-            }
-        });
-
-        methodExamples.forEach(new Consumer<ProxyMethodExample>() {
-            @Override
-            public void accept(ProxyMethodExample proxyMethodExample) {
-                System.out.println(proxyMethodExample.getParameters());
             }
         });
     }
