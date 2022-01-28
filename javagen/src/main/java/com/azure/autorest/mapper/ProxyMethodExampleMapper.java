@@ -26,6 +26,7 @@ public class ProxyMethodExampleMapper implements IMapper<Object, ProxyMethodExam
         ProxyMethodExample.Builder builder = new ProxyMethodExample.Builder();
 
         if (xmsExample instanceof Map) {
+            builder.parameter("operationId", ((Map<?, ?>) xmsExample).get("operationId"));
             Object parameters = ((Map<String, Object>) xmsExample).get("parameters");
             if (parameters instanceof Map) {
                 for (Map.Entry<String, Object> entry : ((Map<String, Object>) parameters).entrySet()) {

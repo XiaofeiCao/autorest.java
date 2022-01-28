@@ -361,4 +361,16 @@ public class FluentUtils {
         }
         return Arrays.asList(values);
     }
+
+
+    public static boolean exampleIsUpdate(String name) {
+        name = name.toLowerCase(Locale.ROOT);
+        return name.contains("update") && !name.contains("create");
+    }
+
+    public static boolean methodIsCreateOrUpdate(FluentResourceModel resourceModel) {
+        return resourceModel.getResourceCreate() != null && resourceModel.getResourceUpdate() != null
+                && Objects.equals(resourceModel.getResourceCreate().getMethodReferences().iterator().next().getMethodName(), resourceModel.getResourceUpdate().getMethodReferences().iterator().next().getMethodName());
+    }
+
 }
