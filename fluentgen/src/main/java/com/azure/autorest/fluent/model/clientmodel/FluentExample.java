@@ -1,7 +1,5 @@
-/*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 package com.azure.autorest.fluent.model.clientmodel;
 
@@ -10,6 +8,7 @@ import com.azure.autorest.fluent.model.clientmodel.examplemodel.FluentClientMeth
 import com.azure.autorest.fluent.model.clientmodel.examplemodel.FluentCollectionMethodExample;
 import com.azure.autorest.fluent.model.clientmodel.examplemodel.FluentResourceCreateExample;
 import com.azure.autorest.fluent.model.clientmodel.examplemodel.FluentResourceUpdateExample;
+import com.azure.autorest.util.ClassNameUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,25 +57,14 @@ public class FluentExample implements Comparable<FluentExample> {
 
     public String getPackageName() {
         JavaSettings settings = JavaSettings.getInstance();
-        if (isAggregatedExamples()) {
-            return settings.getPackage("generated");
-        } else {
-            return settings.getPackage("generated", "examples");
-        }
+        return settings.getPackage("generated");
     }
 
     public String getClassName() {
-        if (isAggregatedExamples()) {
-            return groupName + methodName + "Samples";
-        } else {
-            return groupName + methodName +
-                    com.azure.autorest.preprocessor.namer.CodeNamer.getTypeName(this.exampleName) +
-                    "Samples";
-        }
-    }
-
-    private boolean isAggregatedExamples() {
-        return exampleName == null;
+        String className = groupName + methodName + "Samples";
+        return ClassNameUtil.truncateClassName(
+                JavaSettings.getInstance().getPackage(), "src/samples/java",
+                this.getPackageName(), className);
     }
 
     @Override

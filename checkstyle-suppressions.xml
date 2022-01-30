@@ -5,7 +5,7 @@
 
 <suppressions>
   <!-- ignore com.azure.autorest.customization.implementation -->
-  <suppress checks="[a-zA-Z0-9]*" files="src[/\\]main[/\\]java[/\\]com[/\\]azure[/\\]autorest[/\\]customization[/\\]implementation[/\\].*.java"/>
+  <suppress checks="[IllegalImport]" files="src[/\\]main[/\\]java[/\\]com[/\\]azure[/\\]autorest[/\\]customization[/\\]implementation[/\\].*.java"/>
 
   <!-- Add Javadoc suppression for any test files (ie. ones that live under src/test/java). -->
   <suppress checks="[a-zA-Z0-9]*" files="src[/\\]test[/\\]java[/\\].*.java"/>

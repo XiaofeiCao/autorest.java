@@ -1,7 +1,5 @@
-/*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 package com.azure.autorest.fluent;
 
@@ -184,13 +182,6 @@ public class FluentGen extends Javagen {
             fluentPremiumExamples = client.getServiceClient().getMethodGroupClients().stream()
                     .flatMap(mg -> exampleParser.parseMethodGroup(mg).stream())
                     .collect(Collectors.toList());
-
-            if (fluentJavaSettings.isGenerateSamplesForSpecs()) {
-                ExampleParser exampleParserForSpecs = new ExampleParser(false);
-                fluentPremiumExamples.addAll(client.getServiceClient().getMethodGroupClients().stream()
-                        .flatMap(mg -> exampleParserForSpecs.parseMethodGroup(mg).stream())
-                        .collect(Collectors.toList()));
-            }
         }
 
         return client;
@@ -335,10 +326,6 @@ public class FluentGen extends Javagen {
             List<JavaFile> sampleJavaFiles = new ArrayList<>();
             for (FluentExample example : fluentClient.getExamples()) {
                 sampleJavaFiles.add(javaPackage.addSample(example));
-            }
-            // Samples for REST API specs
-            for (FluentExample example : fluentClient.getExamplesForSpecs()) {
-                javaPackage.addSample(example);
             }
 
             // Readme and Changelog

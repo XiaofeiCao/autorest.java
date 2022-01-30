@@ -1,11 +1,9 @@
-/*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 package com.azure.autorest.template;
 
-import com.azure.autorest.extension.base.plugin.JavaSettings;
+import com.azure.autorest.extension.base.model.codemodel.Scheme;
 import com.azure.autorest.model.clientmodel.ServiceClient;
 import com.azure.autorest.model.clientmodel.ServiceClientProperty;
 import com.azure.autorest.model.javamodel.JavaFile;
@@ -30,8 +28,7 @@ public class ProtocolTestBlankTemplate implements IJavaTemplate<ServiceClient, J
     public void write(ServiceClient serviceClient, JavaFile context) {
 
         final String serviceClientBuilderName = serviceClient.getInterfaceName() + ClientModelUtil.getBuilderSuffix();
-        final boolean isTokenCredential = JavaSettings.getInstance().getCredentialTypes()
-                .contains(JavaSettings.CredentialType.TOKEN_CREDENTIAL);
+        final boolean isTokenCredential = serviceClient.getSecurityInfo() != null && serviceClient.getSecurityInfo().getSecurityTypes() != null ? serviceClient.getSecurityInfo().getSecurityTypes().contains(Scheme.SecuritySchemeType.AADTOKEN): false;
 
         Set<String> imports = new HashSet<>(Arrays.asList(
                 AccessToken.class.getName(),

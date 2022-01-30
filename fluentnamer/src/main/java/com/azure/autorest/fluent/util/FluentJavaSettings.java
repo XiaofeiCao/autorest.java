@@ -1,8 +1,5 @@
-/*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- *
- */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 package com.azure.autorest.fluent.util;
 
@@ -79,8 +76,7 @@ public class FluentJavaSettings {
 
     private enum SampleGeneration {
         NONE,
-        AGGREGATED,
-        REST_API_SPECS
+        AGGREGATED
     }
 
     public FluentJavaSettings(NewPlugin host) {
@@ -138,10 +134,6 @@ public class FluentJavaSettings {
 
     public boolean isGenerateSamples() {
         return generateSamples != SampleGeneration.NONE;
-    }
-
-    public boolean isGenerateSamplesForSpecs() {
-        return generateSamples == SampleGeneration.REST_API_SPECS;
     }
 
     public boolean isSdkIntegration() {

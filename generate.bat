@@ -1,5 +1,5 @@
-set VANILLA_ARGUMENTS=--version=3.6.6 --java --use=. --output-folder=vanilla-tests --sync-methods=all --client-side-validations --add-context-parameter --required-parameter-client-methods
-set AZURE_ARGUMENTS=--version=3.6.6 --java --use=. --output-folder=azure-tests --sync-methods=all --client-side-validations --add-context-parameter --required-parameter-client-methods
+set VANILLA_ARGUMENTS=--version=3.6.6 --java --use=. --output-folder=vanilla-tests --sync-methods=all --client-side-validations --add-context-parameter --required-parameter-client-methods --license-header=MICROSOFT_MIT_SMALL
+set AZURE_ARGUMENTS=--version=3.6.6 --java --use=. --output-folder=azure-tests --sync-methods=all --client-side-validations --add-context-parameter --required-parameter-client-methods --license-header=MICROSOFT_MIT_SMALL
 set ARM_ARGUMENTS=--version=3.6.6 --java --use=. --output-folder=azure-tests --azure-arm --fluent=lite --regenerate-pom=false
 set PROTOCOL_ARGUMENTS=--version=3.6.6 --java --use=. --output-folder=protocol-tests --low-level-client --generate-samples
 set PROTOCOL_RESILIENCE_ARGUMENTS=--version=3.6.6 --java --use=. --low-level-client
@@ -54,6 +54,7 @@ call autorest %VANILLA_ARGUMENTS% --input-file=vanilla-tests/swagger/discriminat
 call autorest %VANILLA_ARGUMENTS% --input-file=vanilla-tests/swagger/discriminator-flattening.json --namespace=fixtures.inheritance.passdiscriminator --pass-discriminator-to-child-deserialization=true
 call autorest %VANILLA_ARGUMENTS% --input-file=vanilla-tests/swagger/client-default-value.json --namespace=fixtures.annotatedgettersandsetters --annotate-getters-and-setters-for-serialization=true
 call autorest %VANILLA_ARGUMENTS% --input-file=vanilla-tests/swagger/xml-tag-with-attribute-and-value.json --namespace=fixtures.complexxmltag --enable-xml
+call autorest %VANILLA_ARGUMENTS% --input-file=vanilla-tests/swagger/security-info.json --namespace=fixtures.securityinfo
 
 rem Azure
 call autorest %AZURE_ARGUMENTS% --input-file=https://raw.githubusercontent.com/Azure/autorest.testserver/%TEST_SERVER_COMMIT%/swagger/paging.json --namespace=fixtures.paging --payload-flattening-threshold=1

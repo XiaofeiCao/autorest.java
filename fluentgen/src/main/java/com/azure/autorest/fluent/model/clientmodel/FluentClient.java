@@ -1,7 +1,5 @@
-/*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 package com.azure.autorest.fluent.model.clientmodel;
 
@@ -63,9 +61,5 @@ public class FluentClient {
 
     public List<FluentExample> getExamples() {
         return examples;
-    }
-
-    public List<FluentExample> getExamplesForSpecs() {
-        return examplesForSpecs;
     }
 }
