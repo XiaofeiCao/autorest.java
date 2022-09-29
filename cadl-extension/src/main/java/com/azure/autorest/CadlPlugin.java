@@ -131,9 +131,9 @@ public class CadlPlugin extends Javagen {
         SETTINGS_MAP.put("generic-response-type", true);
         SETTINGS_MAP.put("output-model-immutable", true);
 
-        SETTINGS_MAP.put("generate-models", Configuration.getGlobalConfiguration().get("GENERATE_MODELS", false));
+        SETTINGS_MAP.put("generate-models", Configuration.getGlobalConfiguration().get("generate-models", false));
 
-        SETTINGS_MAP.put("partial-update", Configuration.getGlobalConfiguration().get("PARTIAL_UPDATE", false));
+        SETTINGS_MAP.put("partial-update", Configuration.getGlobalConfiguration().get("partial-update", false));
     }
 
     public static class MockConnection extends Connection {

@@ -52,7 +52,7 @@ public class ClientModelUtil {
                                            List<AsyncSyncClient> asyncClients, List<AsyncSyncClient> syncClients) {
         boolean generateConvenienceMethods = JavaSettings.getInstance().isDataPlaneClient()
                 // TODO: switch to CADL side-car
-                && Configuration.getGlobalConfiguration().get("GENERATE_CONVENIENCE_METHODS" , false);
+                && Configuration.getGlobalConfiguration().get("generate-convenience-methods" , false);
 
         String packageName = getAsyncSyncClientPackageName(serviceClient);
         boolean generateSyncMethods = JavaSettings.SyncMethodsGeneration.ALL
