@@ -440,7 +440,13 @@ export class CodeModelBuilder {
     const operationName = this.getName(operation);
     const opId = groupName ? `${groupName}_${operationName}` : `${operationName}`;
 
-    const operationExample = this.operationExamples.get(operation);
+    const operationExample = opId == "InferCancerProfile" ? this.operationExamples.values().next() : undefined;
+
+    if (operationExample) {
+      this.logWarning("operation found in example: " + opId)
+    } else {
+      this.logWarning("operation id not found in example: " + opId)
+    }
 
     const codeModelOperation = new CodeModelOperation(operationName, this.getDoc(operation), {
       operationId: opId,

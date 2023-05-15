@@ -107,6 +107,8 @@ export async function loadExamples(program: Program, options: EmitterOptions): P
       version = versions[versions.length - 1].value;
     }
 
+    logWarning(program, "version: " + version)
+
     const exampleDir = version
       ? resolvePath(options["examples-directory"], version)
       : resolvePath(options["examples-directory"]);
@@ -126,6 +128,8 @@ export async function loadExamples(program: Program, options: EmitterOptions): P
           continue;
         }
 
+        logWarning(program, "example operationId: " + example.operationId)
+
         if (!operationIdExamplesMap.has(example.operationId)) {
           operationIdExamplesMap.set(example.operationId, example);
         }
@@ -138,7 +142,9 @@ export async function loadExamples(program: Program, options: EmitterOptions): P
       const routes = service.operations;
       routes.forEach((it) => {
         const operationId = pascalCase(resolveOperationId(program, it.operation));
+        logWarning(program, "operationId: " + operationId)
         if (operationIdExamplesMap.has(operationId)) {
+          logWarning(program, "loaded example. operationId: " + operationId)
           operationExamplesMap.set(it.operation, operationIdExamplesMap.get(operationId));
         }
       });

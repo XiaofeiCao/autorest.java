@@ -5,7 +5,8 @@ options:
     emitter-output-dir: "{project-root}/tsp-output"
     partial-update: true
     namer: true
-    generate-samples: false
+    generate-samples: true
+    examples-directory: ./examples
     generate-tests: false
     enable-sync-stack: true
     dev-options:
