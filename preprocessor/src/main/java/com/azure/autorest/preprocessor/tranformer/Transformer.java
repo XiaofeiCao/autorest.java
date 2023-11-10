@@ -274,9 +274,11 @@ public class Transformer {
         operationGroupName = operationGroup.getLanguage().getJava().getName();
         operationNameTmp = CodeNamer.getMethodName(operationGroupAndName);
       }
-      // In case nextPage operationName conflicts with the operation name itself
+      // In case nextLink operationName conflicts with the operation name itself
       // https://github.com/Azure/azure-rest-api-specs/blob/6301be1289cf6b8cf44074f0e4229c2adf822991/specification/paloaltonetworks/resource-manager/PaloAltoNetworks.Cloudngfw/stable/2023-09-01/PaloAltoNetworks.Cloudngfw.json#L3621C23-L3624
-      if (operationNameTmp.equals(operation.getLanguage().getJava().getName())) {
+      if (operationNameTmp.equals(operation.getLanguage().getJava().getName())
+          // filter out nextLink operations
+          && operation.getParameters().stream().noneMatch(p -> "nextLink".equals(p.get$key()))) {
           operationNameTmp = getDefaultNextPageOperationName(operationNameTmp);
       }
 
