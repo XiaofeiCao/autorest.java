@@ -141,7 +141,10 @@ public class FluentGen extends Javagen {
         JavaSettings javaSettings = JavaSettings.getInstance();
         FluentPremiumJavaPackage javaPackage = new FluentPremiumJavaPackage(this);
         if (javaSettings.isFluentPremium()) {
+            FluentStatic.setClient(client);
+            FluentStatic.setFluentJavaSettings(fluentJavaSettings);
             FluentClient fluentClient = this.getFluentMapper().map(codeModel, client);
+            FluentStatic.setFluentClient(fluentClient);
             Set<String> modelsForPremium = fluentJavaSettings.getModelsForPremium();
             // filter out models/collections to generate
             if (!CoreUtils.isNullOrEmpty(modelsForPremium)) {
@@ -156,6 +159,10 @@ public class FluentGen extends Javagen {
                     javaPackage.addFluentResourceCollection(resourceCreate.getResourceCollection());
                 }
             }
+            // Print to files
+            logger.info("Write Java");
+            Postprocessor.writeToFiles(javaPackage.getJavaFiles().stream()
+                    .collect(Collectors.toMap(JavaFile::getFilePath, file -> file.getContents().toString())), this, logger);
         }
     }
 

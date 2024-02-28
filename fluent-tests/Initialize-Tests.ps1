@@ -23,6 +23,7 @@ $AUTOREST_CORE_VERSION="3.9.7"
 $COMMON_ARGUMENTS="--java --use=../ --java.output-folder=./ --modelerfour.additional-checks=false --modelerfour.lenient-model-deduplication=true --azure-arm --java.license-header=MICROSOFT_MIT_SMALL"
 $FLUENT_ARGUMENTS="$COMMON_ARGUMENTS --fluent"
 $FLUENTLITE_ARGUMENTS="$COMMON_ARGUMENTS --fluent=lite --generate-samples --generate-tests"
+$FLUENTPREMIUM_ARGUMENTS="$COMMON_ARGUMENTS --fluent=premium"
 
 $ExitCode = 0
 
@@ -68,6 +69,9 @@ autorest $arguments
 }
 
 $job = @(
+    # premium gen
+    "--version=$AUTOREST_CORE_VERSION $FLUENTPREMIUM_ARGUMENTS --regenerate-pom=false --input-file=https://github.com/Azure/azure-rest-api-specs/blob/b594fd4145904c9bbd018f4a2ddea75c7134aee7/specification/keyvault/resource-manager/Microsoft.KeyVault/stable/2023-07-01/keyvault.json --java.namespace=com.azure.mgmtpremiumtest.keyvault --models-for-premium=Vault"
+
     # fluent premium
     "--version=$AUTOREST_CORE_VERSION $FLUENT_ARGUMENTS --input-file=https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/resources/resource-manager/Microsoft.Resources/stable/2019-08-01/resources.json --namespace=com.azure.mgmttest.resources",
     "--version=$AUTOREST_CORE_VERSION $FLUENT_ARGUMENTS ./swagger/readme.storage.md --namespace=com.azure.mgmttest.storage",
