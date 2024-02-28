@@ -19,9 +19,11 @@ import com.azure.autorest.fluent.model.clientmodel.FluentResourceCollection;
 import com.azure.autorest.fluent.model.clientmodel.FluentResourceModel;
 import com.azure.autorest.fluent.model.clientmodel.FluentStatic;
 import com.azure.autorest.fluent.model.clientmodel.examplemodel.FluentMethodMockUnitTest;
+import com.azure.autorest.fluent.model.clientmodel.fluentmodel.create.ResourceCreate;
 import com.azure.autorest.fluent.model.javamodel.FluentJavaPackage;
 import com.azure.autorest.fluent.model.projectmodel.FluentProject;
 import com.azure.autorest.fluent.namer.FluentNamerFactory;
+import com.azure.autorest.fluent.premiumgen.FluentPremiumJavaPackage;
 import com.azure.autorest.fluent.template.FluentTemplateFactory;
 import com.azure.autorest.fluent.util.FluentJavaSettings;
 import com.azure.autorest.fluent.util.FluentUtils;
@@ -62,6 +64,7 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FluentGen extends Javagen {
@@ -106,6 +109,9 @@ public class FluentGen extends Javagen {
             // Fluent Lite
             this.handleFluentLite(codeModel, client, javaPackage);
 
+            // Fluent premium
+            this.handleFluentPremium(codeModel, client);
+
             // Print to files
             logger.info("Write Java");
             Postprocessor.writeToFiles(javaPackage.getJavaFiles().stream()
@@ -124,6 +130,32 @@ public class FluentGen extends Javagen {
             logger.error("Failed to successfully run fluentgen plugin " + e, e);
             //connection.sendError(1, 500, "Error occurred while running fluentgen plugin: " + e.getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Generate models/collections for premium.
+     */
+    private void handleFluentPremium(CodeModel codeModel, Client client) {
+        FluentJavaSettings fluentJavaSettings = this.getFluentJavaSettings();
+        JavaSettings javaSettings = JavaSettings.getInstance();
+        FluentPremiumJavaPackage javaPackage = new FluentPremiumJavaPackage(this);
+        if (javaSettings.isFluentPremium()) {
+            FluentClient fluentClient = this.getFluentMapper().map(codeModel, client);
+            Set<String> modelsForPremium = fluentJavaSettings.getModelsForPremium();
+            // filter out models/collections to generate
+            if (!CoreUtils.isNullOrEmpty(modelsForPremium)) {
+                List<ResourceCreate> resourceCreates = fluentClient.getResourceModels().stream()
+                        .filter(model -> modelsForPremium.contains(model.getName()))
+                        .map(FluentResourceModel::getResourceCreate)
+                        .collect(Collectors.toList());
+                for (ResourceCreate resourceCreate : resourceCreates) {
+                    // premium model/implementation template
+                    javaPackage.addFluentResourceModel(resourceCreate.getResourceModel());
+                    // premium collection/implementation template
+                    javaPackage.addFluentResourceCollection(resourceCreate.getResourceCollection());
+                }
+            }
         }
     }
 

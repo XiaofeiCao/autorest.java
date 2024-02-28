@@ -85,6 +85,8 @@ public class FluentJavaSettings {
 
     private boolean sdkIntegration = false;
 
+    private Set<String> modelsForPremium = new HashSet<>();
+
     private enum SampleGeneration {
         NONE,
         AGGREGATED
@@ -175,6 +177,10 @@ public class FluentJavaSettings {
         return sdkIntegration;
     }
 
+    public Set<String> getModelsForPremium() {
+        return modelsForPremium;
+    }
+
     private void loadSettings() {
         loadStringSetting("add-inner", s -> splitStringToSet(s, javaNamesForAddInner));
 
@@ -236,6 +242,8 @@ public class FluentJavaSettings {
         loadStringSetting("graalvm-config-suffix", s -> graalVmConfigSuffix = s);
 
         loadBooleanSetting("sdk-integration", b -> sdkIntegration = b);
+
+        loadStringSetting("models-for-premium", s -> splitStringToSet(s, modelsForPremium));
 
         Map<String, String> namingOverride = host.getValue(new TypeReference<Map<String, String>>() {}.getType(), "pipeline.fluentgen.naming.override");
         if (namingOverride != null) {
