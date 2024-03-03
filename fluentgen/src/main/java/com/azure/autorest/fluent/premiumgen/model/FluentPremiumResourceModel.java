@@ -5,6 +5,7 @@ package com.azure.autorest.fluent.premiumgen.model;
 
 import com.azure.autorest.fluent.model.clientmodel.FluentResourceModel;
 import com.azure.autorest.model.clientmodel.ClassType;
+import com.azure.autorest.model.clientmodel.ClientModel;
 
 public class FluentPremiumResourceModel {
     private final FluentResourceModel resourceModel;
@@ -15,6 +16,10 @@ public class FluentPremiumResourceModel {
 
     public ClassType getInterfaceType() {
         return resourceModel.getInterfaceType();
+    }
+
+    public ClientModel getInnerModel() {
+        return resourceModel.getInnerModel();
     }
 
     public ClassType getImplementationType() {

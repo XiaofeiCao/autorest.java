@@ -4,6 +4,7 @@
 package com.azure.autorest.fluent.premiumgen.template;
 
 import com.azure.autorest.fluent.model.FluentPremiumResourceCollection;
+import com.azure.autorest.model.clientmodel.IType;
 import com.azure.autorest.model.javamodel.JavaFile;
 import com.azure.autorest.template.IJavaTemplate;
 
@@ -20,8 +21,22 @@ public class FluentPremiumResourceCollectionImplementationTemplate implements IJ
     public void write(FluentPremiumResourceCollection collection, JavaFile javaFile) {
         Set<String> imports = new HashSet<>();
         collection.getInterfaceType().addImportsTo(imports, false);
+        StringBuilder parentDeclaration = new StringBuilder();
+        IType parentClass = collection.getParentClass();
+        if (parentClass != null) {
+            parentClass.addImportsTo(imports, false);
+            parentDeclaration.append(String.format(" extends %s", parentClass));
+        }
+        parentDeclaration.append(String.format(" implements %s", collection.getInterfaceType().getName()));
+
         javaFile.declareImport(imports);
-        javaFile.publicFinalClass(String.format("%1$s implements %2$s", collection.getImplementationType().getName(), collection.getInterfaceType().getName()), classBlock -> {
+        javaFile.publicFinalClass(
+                String.format(
+                        "%1$s%2$s",
+                        collection.getImplementationType().getName(),
+                        parentDeclaration),
+                classBlock -> {
+
         });
     }
 }

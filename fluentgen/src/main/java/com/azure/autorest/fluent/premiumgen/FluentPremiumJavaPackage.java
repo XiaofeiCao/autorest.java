@@ -5,11 +5,14 @@ package com.azure.autorest.fluent.premiumgen;
 
 import com.azure.autorest.extension.base.plugin.NewPlugin;
 import com.azure.autorest.fluent.model.FluentPremiumResourceCollection;
+import com.azure.autorest.fluent.model.clientmodel.FluentManager;
+import com.azure.autorest.fluent.model.projectmodel.FluentProject;
 import com.azure.autorest.fluent.premiumgen.model.FluentPremiumResourceModel;
 import com.azure.autorest.fluent.premiumgen.template.FluentPremiumResourceCollectionImplementationTemplate;
 import com.azure.autorest.fluent.premiumgen.template.FluentPremiumResourceCollectionInterfaceTemplate;
 import com.azure.autorest.fluent.premiumgen.template.FluentPremiumResourceModelImplementationTemplate;
 import com.azure.autorest.fluent.premiumgen.template.FluentPremiumResourceModelInterfaceTemplate;
+import com.azure.autorest.fluent.template.FluentManagerTemplate;
 import com.azure.autorest.model.javamodel.JavaFile;
 import com.azure.autorest.model.javamodel.JavaPackage;
 
@@ -43,6 +46,14 @@ public class FluentPremiumJavaPackage extends JavaPackage {
                 collection.getImplementationType().getPackage(),
                 collection.getImplementationType().getName());
         FluentPremiumResourceCollectionImplementationTemplate.getInstance().write(collection, javaFile);
+        addJavaFile(javaFile);
+    }
+
+    public void addManager(FluentManager model, FluentProject project) {
+        JavaFile javaFile = getJavaFileFactory().createSourceFile(
+                model.getType().getPackage(),
+                model.getType().getName());
+        FluentManagerTemplate.getInstance().write(model, project, javaFile);
         addJavaFile(javaFile);
     }
 }

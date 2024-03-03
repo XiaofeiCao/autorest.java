@@ -4,8 +4,14 @@
 package com.azure.autorest.fluent.premiumgen.template;
 
 import com.azure.autorest.fluent.model.FluentPremiumResourceCollection;
+import com.azure.autorest.model.clientmodel.IType;
 import com.azure.autorest.model.javamodel.JavaFile;
 import com.azure.autorest.template.IJavaTemplate;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class FluentPremiumResourceCollectionInterfaceTemplate implements IJavaTemplate<FluentPremiumResourceCollection, JavaFile> {
     private static final FluentPremiumResourceCollectionInterfaceTemplate INSTANCE = new FluentPremiumResourceCollectionInterfaceTemplate();
@@ -16,8 +22,16 @@ public class FluentPremiumResourceCollectionInterfaceTemplate implements IJavaTe
 
     @Override
     public void write(FluentPremiumResourceCollection collection, JavaFile javaFile) {
-        javaFile.publicInterface(collection.getInterfaceType().getName(), interfaceBlock -> {
+        Set<String> imports = new HashSet<>();
+        collection.addImportsTo(imports, false);
+        javaFile.declareImport(imports);
+        // parent interface
+        List<String> supportedInterfaces = collection.getSupportedInterfaces()
+                .stream().map(IType::toString).collect(Collectors.toList());
+        String parentDeclaration = !supportedInterfaces.isEmpty() ? String.format(" extends %1$s", String.join(", ", supportedInterfaces)) : "";
 
+        // method signature
+        javaFile.publicInterface(String.format("%1$s%2$s", collection.getInterfaceType().getName(), parentDeclaration), interfaceBlock -> {
         });
     }
 }
