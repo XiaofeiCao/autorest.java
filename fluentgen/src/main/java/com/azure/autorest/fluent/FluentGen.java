@@ -12,6 +12,7 @@ import com.azure.autorest.fluent.mapper.ExampleParser;
 import com.azure.autorest.fluent.mapper.FluentMapper;
 import com.azure.autorest.fluent.mapper.FluentMapperFactory;
 import com.azure.autorest.fluent.mapper.FluentPomMapper;
+import com.azure.autorest.fluent.model.FluentPremiumResourceCollection;
 import com.azure.autorest.fluent.model.clientmodel.FluentClient;
 import com.azure.autorest.fluent.model.clientmodel.FluentExample;
 import com.azure.autorest.fluent.model.clientmodel.FluentLiveTests;
@@ -19,11 +20,12 @@ import com.azure.autorest.fluent.model.clientmodel.FluentResourceCollection;
 import com.azure.autorest.fluent.model.clientmodel.FluentResourceModel;
 import com.azure.autorest.fluent.model.clientmodel.FluentStatic;
 import com.azure.autorest.fluent.model.clientmodel.examplemodel.FluentMethodMockUnitTest;
-import com.azure.autorest.fluent.model.clientmodel.fluentmodel.create.ResourceCreate;
 import com.azure.autorest.fluent.model.javamodel.FluentJavaPackage;
 import com.azure.autorest.fluent.model.projectmodel.FluentProject;
 import com.azure.autorest.fluent.namer.FluentNamerFactory;
+import com.azure.autorest.fluent.premiumgen.FluentPremiumClient;
 import com.azure.autorest.fluent.premiumgen.FluentPremiumJavaPackage;
+import com.azure.autorest.fluent.premiumgen.model.FluentPremiumResourceModel;
 import com.azure.autorest.fluent.template.FluentTemplateFactory;
 import com.azure.autorest.fluent.util.FluentJavaSettings;
 import com.azure.autorest.fluent.util.FluentUtils;
@@ -64,7 +66,6 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FluentGen extends Javagen {
@@ -145,19 +146,12 @@ public class FluentGen extends Javagen {
             FluentStatic.setFluentJavaSettings(fluentJavaSettings);
             FluentClient fluentClient = this.getFluentMapper().map(codeModel, client);
             FluentStatic.setFluentClient(fluentClient);
-            Set<String> modelsForPremium = fluentJavaSettings.getModelsForPremium();
-            // filter out models/collections to generate
-            if (!CoreUtils.isNullOrEmpty(modelsForPremium)) {
-                List<ResourceCreate> resourceCreates = fluentClient.getResourceModels().stream()
-                        .filter(model -> modelsForPremium.contains(model.getName()))
-                        .map(FluentResourceModel::getResourceCreate)
-                        .collect(Collectors.toList());
-                for (ResourceCreate resourceCreate : resourceCreates) {
-                    // premium model/implementation template
-                    javaPackage.addFluentResourceModel(resourceCreate.getResourceModel());
-                    // premium collection/implementation template
-                    javaPackage.addFluentResourceCollection(resourceCreate.getResourceCollection());
-                }
+            FluentPremiumClient premiumClient = new FluentPremiumClient(fluentClient);
+            for (FluentPremiumResourceModel model : premiumClient.getResourceModels()) {
+                javaPackage.addFluentResourceModel(model);
+            }
+            for (FluentPremiumResourceCollection collection : premiumClient.getResourceCollections()) {
+                javaPackage.addFluentResourceCollection(collection);
             }
             // Print to files
             logger.info("Write Java");

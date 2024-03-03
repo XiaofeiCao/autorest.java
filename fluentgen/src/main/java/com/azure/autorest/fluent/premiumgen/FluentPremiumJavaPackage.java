@@ -4,8 +4,12 @@
 package com.azure.autorest.fluent.premiumgen;
 
 import com.azure.autorest.extension.base.plugin.NewPlugin;
-import com.azure.autorest.fluent.model.clientmodel.FluentResourceCollection;
-import com.azure.autorest.fluent.model.clientmodel.FluentResourceModel;
+import com.azure.autorest.fluent.model.FluentPremiumResourceCollection;
+import com.azure.autorest.fluent.premiumgen.model.FluentPremiumResourceModel;
+import com.azure.autorest.fluent.premiumgen.template.FluentPremiumResourceCollectionImplementationTemplate;
+import com.azure.autorest.fluent.premiumgen.template.FluentPremiumResourceCollectionInterfaceTemplate;
+import com.azure.autorest.fluent.premiumgen.template.FluentPremiumResourceModelImplementationTemplate;
+import com.azure.autorest.fluent.premiumgen.template.FluentPremiumResourceModelInterfaceTemplate;
 import com.azure.autorest.model.javamodel.JavaFile;
 import com.azure.autorest.model.javamodel.JavaPackage;
 
@@ -14,7 +18,7 @@ public class FluentPremiumJavaPackage extends JavaPackage {
         super(host);
     }
 
-    public void addFluentResourceModel(FluentResourceModel model) {
+    public void addFluentResourceModel(FluentPremiumResourceModel model) {
         JavaFile javaFile = getJavaFileFactory().createSourceFile(
                 model.getInterfaceType().getPackage(),
                 model.getInterfaceType().getName());
@@ -28,7 +32,7 @@ public class FluentPremiumJavaPackage extends JavaPackage {
         addJavaFile(javaFile);
     }
 
-    public void addFluentResourceCollection(FluentResourceCollection collection) {
+    public void addFluentResourceCollection(FluentPremiumResourceCollection collection) {
         JavaFile javaFile = getJavaFileFactory().createSourceFile(
                 collection.getInterfaceType().getPackage(),
                 collection.getInterfaceType().getName());
