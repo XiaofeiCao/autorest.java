@@ -238,11 +238,15 @@ public class StreamSerializationModelTemplate extends ModelTemplate {
                 ClientModelUtil.getParentProperties(model)
                         .stream()
                         .filter(property -> !property.isPolymorphicDiscriminator()
-                                // must be read-only and not appear in constructor
-                                && property.isReadOnly() && !settings.isIncludeReadOnlyInConstructorArgs()
-                                // not required and in constructor
-                                && !(property.isRequired() && settings.isRequiredFieldsAsConstructorArgs()))
+                                && readOnlyNotInCtor(property, settings))
         ).collect(Collectors.toList());
+    }
+
+    private static boolean readOnlyNotInCtor(ClientModelProperty property, JavaSettings settings) {
+        return  // must be read-only and not appear in constructor
+                property.isReadOnly() && !settings.isIncludeReadOnlyInConstructorArgs()
+                // not required and in constructor
+                && !(property.isRequired() && settings.isRequiredFieldsAsConstructorArgs());
     }
 
     /**
@@ -1407,7 +1411,7 @@ hasConstructorArguments, settings));
         ClientModelProperty property, String value, boolean fromSuper) {
         // If the property is defined in a super class use the setter as this will be able to set the value in the
         // super class.
-        if (fromSuper) {
+        if (fromSuper && !readOnlyNotInCtor(property, JavaSettings.getInstance())) {
             methodBlock.line(modelVariableName + "." + property.getSetterName() + "(" + value + ");");
         } else {
             methodBlock.line(modelVariableName + "." + property.getName() + " = " + value + ";");
