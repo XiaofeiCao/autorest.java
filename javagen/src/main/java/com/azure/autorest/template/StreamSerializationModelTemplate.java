@@ -1411,7 +1411,10 @@ hasConstructorArguments, settings));
         ClientModelProperty property, String value, boolean fromSuper) {
         // If the property is defined in a super class use the setter as this will be able to set the value in the
         // super class.
-        if (fromSuper && !readOnlyNotInCtor(property, JavaSettings.getInstance())) {
+        if (fromSuper
+                // Parent read-only properties that's not in constructor are shadowed in subclass,
+                // thus they can be directly accessed without setters.
+                && !readOnlyNotInCtor(property, JavaSettings.getInstance())) {
             methodBlock.line(modelVariableName + "." + property.getSetterName() + "(" + value + ");");
         } else {
             methodBlock.line(modelVariableName + "." + property.getName() + " = " + value + ";");
