@@ -102,10 +102,7 @@ model CustomTemplateResource is TrackedResource<CustomTemplateResourceProperties
   @pattern("^[A-Za-z0-9]([A-Za-z0-9-_.]{0,62}[A-Za-z0-9])?$")
   name: string;
 
-  #suppress "@azure-tools/typespec-azure-resource-manager/arm-resource-invalid-envelope-property" "https://github.com/Azure/typespec-azure/issues/2840"
-  @added(Versions.v2023_11_01)
-  @doc("Managed identity.")
-  identity?: Azure.ResourceManager.Foundations.ManagedServiceIdentity;
+  ...ManagedServiceIdentityProperty;
 
   kind: DogKind;
 }

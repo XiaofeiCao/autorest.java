@@ -9,20 +9,20 @@ using Azure.Core;
 using Azure.ResourceManager;
 using TypeSpec.OpenAPI;
 
-namespace Arm.Models.Resources;
+namespace Azure.Arm.Models.Resources;
 
-@resource("topLevelArmResources")
-model TopLevelArmResource is TrackedResource<TopLevelArmResourceProperties> {
-  @key("topLevelArmResourceName")
+@resource("topLevelTrackedResources")
+model TopLevelTrackedResource is TrackedResource<TopLevelTrackedResourceProperties> {
+  @key("topLevelTrackedResourceName")
   @path
-  @segment("topLevelArmResources")
+  @segment("topLevelTrackedResources")
   @doc("arm resource name for path")
   @pattern("^[A-Za-z0-9]([A-Za-z0-9-_.]{0,62}[A-Za-z0-9])?$")
   name: string;
 }
 
 @doc("Top Level Arm Resource Properties.")
-model TopLevelArmResourceProperties {
+model TopLevelTrackedResourceProperties {
   @visibility("read")
   @doc("The status of the last operation.")
   provisioningState?: ProvisioningState;
@@ -32,16 +32,16 @@ model TopLevelArmResourceProperties {
 }
 
 @armResourceOperations
-interface TopLevelArmResources {
-  get is ArmResourceRead<TopLevelArmResource>;
+interface TopLevelTrackedResources {
+  get is ArmResourceRead<TopLevelTrackedResource>;
 
-  createOrReplace is ArmResourceCreateOrReplaceAsync<TopLevelArmResource>;
+  createOrReplace is ArmResourceCreateOrReplaceAsync<TopLevelTrackedResource>;
 
-  update is ArmResourcePatchAsync<TopLevelArmResource, TopLevelArmResourceProperties>;
+  delete is ArmResourceDeleteWithoutOkAsync<TopLevelTrackedResource>;
 
-  delete is ArmResourceDeleteWithoutOkAsync<TopLevelArmResource>;
+  update is ArmResourcePatchAsync<TopLevelTrackedResource, TopLevelTrackedResourceProperties>;
 
-  listByResourceGroup is ArmResourceListByParent<TopLevelArmResource>;
+  listByResourceGroup is ArmResourceListByParent<TopLevelTrackedResource>;
 
-  listBySubscription is ArmListBySubscription<TopLevelArmResource>;
+  listBySubscription is ArmListBySubscription<TopLevelTrackedResource>;
 }

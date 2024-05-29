@@ -2,7 +2,6 @@ import "@typespec/http";
 import "@typespec/rest";
 import "@azure-tools/typespec-azure-core";
 import "@azure-tools/typespec-azure-resource-manager";
-import "./toplevel.tsp";
 
 using TypeSpec.Http;
 using TypeSpec.Rest;
@@ -10,38 +9,39 @@ using Azure.Core;
 using Azure.ResourceManager;
 using TypeSpec.OpenAPI;
 
-namespace Arm.Models.Resources;
+namespace Azure.Arm.Models.Resources;
 
-@doc("Nested child of Top Level Arm Resource.")
-@parentResource(TopLevelArmResource)
-model NestedChildResource is TrackedResource<NestedChildResourceProperties> {
-  @key("childResourceName")
-  @doc("ChildResources")
+@doc("Nested child of Top Level Tracked Resource.")
+@parentResource(TopLevelTrackedResource)
+model NestedProxyResource is ProxyResource<NestedProxyResourceProperties> {
+  @key("nextedProxyResourceName")
+  @doc("Name of the nested resource.")
   @visibility("read")
   @path
-  @segment("childResources")
+  @segment("nestedProxyResources")
   @pattern("^[A-Za-z0-9]([A-Za-z0-9-_.]{0,62}[A-Za-z0-9])?$")
   name: string;
 }
 
-@doc("Nested child Resource Properties.")
-model NestedChildResourceProperties {
+@doc("Nested Proxy Resource Properties.")
+model NestedProxyResourceProperties {
   @visibility("read")
-  @doc("Provisioning State of Top Level Arm Resource")
+  @doc("Provisioning State of the nested child Resource")
   provisioningState?: ProvisioningState;
+
+  @doc("Nested resource description.")
+  description?: string;
 }
 
 @armResourceOperations
-interface NestedChildResources {
-  get is ArmResourceRead<NestedChildResource>;
+interface NestedProxyResources {
+  get is ArmResourceRead<NestedProxyResource>;
 
-  createOrReplace is ArmResourceCreateOrReplaceAsync<NestedChildResource>;
+  createOrReplace is ArmResourceCreateOrReplaceAsync<NestedProxyResource>;
 
-  update is ArmResourcePatchAsync<NestedChildResource, NestedChildResourceProperties>;
+  update is ArmResourcePatchAsync<NestedProxyResource, NestedProxyResourceProperties>;
 
-  delete is ArmResourceDeleteWithoutOkAsync<NestedChildResource>;
+  delete is ArmResourceDeleteWithoutOkAsync<NestedProxyResource>;
 
-  listByResourceGroup is ArmResourceListByParent<NestedChildResource>;
-
-  listBySubscription is ArmListBySubscription<NestedChildResource>;
+  listByParent is ArmResourceListByParent<NestedProxyResource>;
 }
