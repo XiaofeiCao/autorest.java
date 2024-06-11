@@ -267,9 +267,11 @@ public class ModelTemplate implements IJavaTemplate<ClientModel, JavaFile> {
             if (settings.getClientFlattenAnnotationTarget() == JavaSettings.ClientFlattenAnnotationTarget.NONE) {
                 // reference to properties from flattened client model
                 for (ClientModelPropertyReference propertyReference : propertyReferences) {
-                    if (!propertyReference.isFromFlattenedProperty()) {
+                    if (!isFlatteningPropertyAndNeedGetterAndSetter(propertyReference, model)) {
                         continue;
                     }
+
+                    propertyReference = getFlatteningPropertyReference(propertyReference);
 
                     ClientModelPropertyAccess property = propertyReference.getReferenceProperty();
                     ClientModelProperty targetProperty = propertyReference.getTargetProperty();
@@ -299,9 +301,10 @@ public class ModelTemplate implements IJavaTemplate<ClientModel, JavaFile> {
                     if (!propertyIsReadOnly) {
                         generateSetterJavadoc(classBlock, model, property);
                         addGeneratedAnnotation(classBlock);
+                        ClientModelPropertyReference propertyReferenceFinal = propertyReference;
                         classBlock.publicMethod(String.format("%s %s(%s %s)", model.getName(), propertyReference.getSetterName(), propertyClientType, property.getName()), methodBlock -> {
                             methodBlock.ifBlock(String.format("this.%s() == null", targetProperty.getGetterName()), ifBlock ->
-                                methodBlock.line(String.format("this.%s = new %s();", targetProperty.getName(), propertyReference.getTargetModelType())));
+                                methodBlock.line(String.format("this.%s = new %s();", targetProperty.getName(), propertyReferenceFinal.getTargetModelType())));
 
                             methodBlock.line(String.format("this.%s().%s(%s);", targetProperty.getGetterName(), property.getSetterName(), property.getName()));
                             methodBlock.methodReturn("this");
@@ -320,6 +323,25 @@ public class ModelTemplate implements IJavaTemplate<ClientModel, JavaFile> {
                 writeStreamStyleSerialization(classBlock, model, settings);
             }
         });
+    }
+
+    /**
+     * Get the root definition of the property reference.
+     * This method should be called if and only if {@link #isFlatteningPropertyAndNeedGetterAndSetter(ClientModelPropertyReference, ClientModel)}
+     * is true.
+     *
+     * @param propertyReference propertyReference to check
+     * @return the root definition of the property reference
+     */
+    private ClientModelPropertyReference getFlatteningPropertyReference(ClientModelPropertyReference propertyReference) {
+        if (propertyReference.isFromFlattenedProperty()) {
+            return propertyReference;
+        }
+        return (ClientModelPropertyReference) propertyReference.getReferenceProperty();
+    }
+
+    protected boolean isFlatteningPropertyAndNeedGetterAndSetter(ClientModelPropertyReference propertyReference, ClientModel model) {
+        return propertyReference.isFromFlattenedProperty();
     }
 
     /**

@@ -10,6 +10,7 @@ import com.azure.autorest.implementation.JsonFlattenedPropertiesTree;
 import com.azure.autorest.model.clientmodel.ClassType;
 import com.azure.autorest.model.clientmodel.ClientModel;
 import com.azure.autorest.model.clientmodel.ClientModelProperty;
+import com.azure.autorest.model.clientmodel.ClientModelPropertyReference;
 import com.azure.autorest.model.clientmodel.IType;
 import com.azure.autorest.model.clientmodel.IterableType;
 import com.azure.autorest.model.clientmodel.MapType;
@@ -246,6 +247,7 @@ public class StreamSerializationModelTemplate extends ModelTemplate {
                                 // parent discriminators are already passed to children, see @see in method javadoc
                                 !property.isPolymorphicDiscriminator()
                                         && readOnlyNotInCtor(model, property, settings)
+                                        || property.getClientFlatten()
                         )
         ).collect(Collectors.toList());
     }
@@ -260,6 +262,30 @@ public class StreamSerializationModelTemplate extends ModelTemplate {
     @Override
     protected boolean isOverrideParentGetter(ClientModel model, ClientModelProperty property, JavaSettings settings) {
         return !modelDefinesProperty(model, property) && (property.isPolymorphicDiscriminator() || readOnlyNotInCtor(model, property, settings));
+    }
+
+    /**
+     * Whether we should generate getter/setter for this flattening property.
+     *
+     * @param propertyReference the flattening property
+     * @param model the model to generate getter/setter in
+     * @return whether we should generate getter/setter for this flattening property
+     * @see #getClientModelPropertyReferences(ClientModel)
+     * @see ClientModelPropertyReference#ofParentProperty(ClientModelProperty)
+     */
+    @Override
+    protected boolean isFlatteningPropertyAndNeedGetterAndSetter(ClientModelPropertyReference propertyReference, ClientModel model) {
+        return propertyReference.isFromFlattenedProperty()
+                || (
+                // If current class's propertyReference is collected from parent class's flattening property,
+                // it's collected as a reference directly to the parent's flattening property.
+                // This means, propertyReference.isFromFlattenedProperty() check will return false. Since flatten property
+                // is shadowed in child class, we want to generate getters/setters for its flattening properties.
+                // Hence, we need to do some extra check here whether it's reference to parent class's flattening property.
+                propertyReference.getReferenceProperty() != null
+                        && propertyReference.getReferenceProperty() instanceof ClientModelPropertyReference
+                        && ((ClientModelPropertyReference) propertyReference.getReferenceProperty()).getTargetProperty() != null
+                        && !modelDefinesProperty(model, ((ClientModelPropertyReference) propertyReference.getReferenceProperty()).getTargetProperty()));
     }
 
     private static boolean readOnlyNotInCtor(ClientModel model, ClientModelProperty property, JavaSettings settings) {
