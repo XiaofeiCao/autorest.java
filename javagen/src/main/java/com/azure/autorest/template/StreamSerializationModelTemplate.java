@@ -10,6 +10,7 @@ import com.azure.autorest.implementation.JsonFlattenedPropertiesTree;
 import com.azure.autorest.model.clientmodel.ClassType;
 import com.azure.autorest.model.clientmodel.ClientModel;
 import com.azure.autorest.model.clientmodel.ClientModelProperty;
+import com.azure.autorest.model.clientmodel.ClientModelPropertyAccess;
 import com.azure.autorest.model.clientmodel.ClientModelPropertyReference;
 import com.azure.autorest.model.clientmodel.IType;
 import com.azure.autorest.model.clientmodel.IterableType;
@@ -265,7 +266,30 @@ public class StreamSerializationModelTemplate extends ModelTemplate {
     }
 
     /**
-     * Whether we should generate getter/setter for this flattening property.
+     * Whether the property is flattening property and whether we should generate getter/setter for it using field flattened properties.
+     * Below is an example:
+     * After calling {@link #getClientModelPropertyReferences(ClientModel)} on model2, the collected propertyReferences hierarchy
+     * looks like(property1FromParent will be collected):
+     * <pre>{@code
+     *         FlattenedProperties
+     *          - property1                    <--------------
+     *                                                       |
+     *         Model1                                        |
+     *          - innerProperties: FlattenProperties         |
+     *          - property1FromFlatten    ^    <--           |
+     *              - referenceProperty   |      |       ----|
+     *              - targetProperty    ---      |
+     *                                           |
+     *         Model2 extends Model1             |
+     *          (- property1FromParent)          |
+     *              - referenceProperty      ----|
+     *              - targetProperty -> null
+     * }
+     * </pre>
+     *
+     * In above case, we should generate getter/setter for property1FromFlatten in Model1.
+     * Additionally, we should generate getter/setter for property1FromParent in Model2.
+     * This is because we duplicated innerProperties in Model2.
      *
      * @param propertyReference the flattening property
      * @param model the model to generate getter/setter in
@@ -274,7 +298,7 @@ public class StreamSerializationModelTemplate extends ModelTemplate {
      * @see ClientModelPropertyReference#ofParentProperty(ClientModelProperty)
      */
     @Override
-    protected boolean isFlatteningPropertyAndNeedGetterAndSetter(ClientModelPropertyReference propertyReference, ClientModel model) {
+    protected boolean isFlatteningPropertyAndNeedLocalGetterAndSetter(ClientModelPropertyReference propertyReference, ClientModel model) {
         return propertyReference.isFromFlattenedProperty()
                 || (
                 // If current class's propertyReference is collected from parent class's flattening property,
@@ -284,8 +308,16 @@ public class StreamSerializationModelTemplate extends ModelTemplate {
                 // Hence, we need to do some extra check here whether it's reference to parent class's flattening property.
                 propertyReference.getReferenceProperty() != null
                         && propertyReference.getReferenceProperty() instanceof ClientModelPropertyReference
-                        && ((ClientModelPropertyReference) propertyReference.getReferenceProperty()).getTargetProperty() != null
-                        && !modelDefinesProperty(model, ((ClientModelPropertyReference) propertyReference.getReferenceProperty()).getTargetProperty()));
+                        && ((ClientModelPropertyReference) propertyReference.getReferenceProperty()).getTargetProperty() != null);
+    }
+
+    @Override
+    protected List<ClientModelPropertyAccess> getParentSettersToOverride(ClientModel model, JavaSettings settings, List<ClientModelPropertyReference> propertyReferences) {
+        return super.getParentSettersToOverride(model, settings, propertyReferences)
+                .stream()
+                .filter(propertyReference -> !(propertyReference instanceof ClientModelPropertyReference)
+                        || !isFlatteningPropertyAndNeedLocalGetterAndSetter((ClientModelPropertyReference) propertyReference, model))
+                .collect(Collectors.toList());
     }
 
     private static boolean readOnlyNotInCtor(ClientModel model, ClientModelProperty property, JavaSettings settings) {
@@ -1533,8 +1565,8 @@ public class StreamSerializationModelTemplate extends ModelTemplate {
         // If the property is defined in a super class use the setter as this will be able to set the value in the
         // super class.
         if (fromSuper
-            // If the property is read-only from parent, it will be shadowed in child class.
-            && !readOnlyNotInCtor(model, property, JavaSettings.getInstance())) {
+            // If the property is flattened or read-only from parent, it will be shadowed in child class.
+            && (!readOnlyNotInCtor(model, property, JavaSettings.getInstance()) || property.getClientFlatten())) {
             if (polymorphicJsonMergePatchScenario) {
                 // Polymorphic JSON merge patch needs special handling as the setter methods are used to track whether
                 // the property is included in patch serialization. To prevent deserialization from requiring parent
