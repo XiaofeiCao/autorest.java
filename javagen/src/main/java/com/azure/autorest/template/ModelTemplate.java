@@ -267,11 +267,10 @@ public class ModelTemplate implements IJavaTemplate<ClientModel, JavaFile> {
             if (settings.getClientFlattenAnnotationTarget() == JavaSettings.ClientFlattenAnnotationTarget.NONE) {
                 // reference to properties from flattened client model
                 for (ClientModelPropertyReference propertyReference : propertyReferences) {
-                    if (!isFlatteningPropertyAndNeedLocalGetterAndSetter(propertyReference, model)) {
+                    propertyReference = getLocalFlattenedModelPropertyReference(propertyReference);
+                    if (propertyReference == null) {
                         continue;
                     }
-
-                    propertyReference = getFlatteningPropertyReference(propertyReference);
 
                     ClientModelPropertyAccess property = propertyReference.getReferenceProperty();
                     ClientModelProperty targetProperty = propertyReference.getTargetProperty();
@@ -326,26 +325,17 @@ public class ModelTemplate implements IJavaTemplate<ClientModel, JavaFile> {
     }
 
     /**
-     * Get the property reference that's referring to the flattened property.
-     * This method should be called if and only if {@link #isFlatteningPropertyAndNeedLocalGetterAndSetter(ClientModelPropertyReference, ClientModel)}
-     * is true.
-     *
+     * Get the property reference referring to the local(field) flattened property.
      *
      * @param propertyReference propertyReference to check
-     * @return the root definition of the property reference
-     * @see #isFlatteningPropertyAndNeedLocalGetterAndSetter(ClientModelPropertyReference, ClientModel)
+     * @return the property reference referring to the local(field) flattened property, null if it's not
      */
-    private ClientModelPropertyReference getFlatteningPropertyReference(ClientModelPropertyReference propertyReference) {
+    protected ClientModelPropertyReference getLocalFlattenedModelPropertyReference(ClientModelPropertyReference propertyReference) {
         if (propertyReference.isFromFlattenedProperty()) {
             return propertyReference;
         }
-        // Since the property is flattening(isFlatteningPropertyAndNeedGetterAndSetter=true), it's a reference to parent's
-        // flattening property
-        return (ClientModelPropertyReference) propertyReference.getReferenceProperty();
-    }
-
-    protected boolean isFlatteningPropertyAndNeedLocalGetterAndSetter(ClientModelPropertyReference propertyReference, ClientModel model) {
-        return propertyReference.isFromFlattenedProperty();
+        // Not a flattening property, return null.
+        return null;
     }
 
     /**
@@ -461,11 +451,6 @@ public class ModelTemplate implements IJavaTemplate<ClientModel, JavaFile> {
                     // child does not contain property that shadow this parent property
                     return !modelPropertyNames.contains(parentProperty.getName());
                 })
-                .filter(propertyReference ->
-                        // If the propertyReference is flattening property and we generate local getter/setter
-                        // for it, then we don't need to override its parent setter.
-                        !(propertyReference instanceof ClientModelPropertyReference)
-                                || !isFlatteningPropertyAndNeedLocalGetterAndSetter((ClientModelPropertyReference) propertyReference, model))
                 .collect(Collectors.toList());
     }
 
