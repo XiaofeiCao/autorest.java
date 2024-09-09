@@ -4,11 +4,12 @@
 package com.azure.resourcemanager.models.commontypes.managedidentity;
 
 import com.azure.core.management.Region;
-import com.azure.resourcemanager.models.commontypes.managedidentity.models.ManagedIdentityTrackedResource;
-import com.azure.resourcemanager.models.commontypes.managedidentity.models.ManagedIdentityTrackedResourceProperties;
-import com.azure.resourcemanager.models.commontypes.managedidentity.models.ManagedServiceIdentity;
-import com.azure.resourcemanager.models.commontypes.managedidentity.models.ManagedServiceIdentityType;
-import com.azure.resourcemanager.models.commontypes.managedidentity.models.UserAssignedIdentity;
+import com.azure.resourcemanager.commontype.managedidentity.ManagedIdentityManager;
+import com.azure.resourcemanager.commontype.managedidentity.models.ManagedIdentityTrackedResource;
+import com.azure.resourcemanager.commontype.managedidentity.models.ManagedIdentityTrackedResourceProperties;
+import com.azure.resourcemanager.commontype.managedidentity.models.ManagedServiceIdentity;
+import com.azure.resourcemanager.commontype.managedidentity.models.ManagedServiceIdentityType;
+import com.azure.resourcemanager.commontype.managedidentity.models.UserAssignedIdentity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.utils.ArmUtils;
@@ -26,7 +27,7 @@ public class ManagedIdentityManagerTests {
     public void testManagedIdentityManager() {
         Map<String, String> tagsMap = new HashMap<>();
         tagsMap.put("tagKey1", "tagValue1");
-        ManagedIdentityTrackedResource resource = manager.managedIdentityTrackedResources()
+        ManagedIdentityTrackedResource resource = manager.properties()
                 .define("identity")
                 .withRegion(Region.US_EAST)
                 .withExistingResourceGroup("test-rg")
@@ -38,7 +39,7 @@ public class ManagedIdentityManagerTests {
         Assertions.assertNotNull(resource.identity().principalId());
         Assertions.assertNotNull(resource.identity().tenantId());
 
-        resource = manager.managedIdentityTrackedResources().getById(resource.id());
+        resource = manager.properties().getById(resource.id());
         Assertions.assertEquals(ManagedServiceIdentityType.SYSTEM_ASSIGNED, resource.identity().type());
         Assertions.assertNotNull(resource.identity().principalId());
         Assertions.assertNotNull(resource.identity().tenantId());
